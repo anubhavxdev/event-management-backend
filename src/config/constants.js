@@ -1,0 +1,21 @@
+module.exports = {
+  ROLES: {
+    ADMIN: "ADMIN",
+    VOLUNTEER: "VOLUNTEER",
+    ATTENDEE: "ATTENDEE",
+  },
+
+  PAYMENT_STATUS: {
+    PENDING: "PENDING",
+    SUCCESS: "SUCCESS",
+    FAILED: "FAILED",
+  },
+
+  REGISTRATION_TYPE: {
+    SOLO: "SOLO",
+    TEAM: "TEAM",
+  },
+
+  TEAM_SIZE: 4,
+  TICKET_PRICE: 50,
+};
