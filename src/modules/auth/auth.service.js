@@ -1,7 +1,6 @@
-const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { users } = require("./user.store");
+const prisma = require("../../config/prisma");
 const AppError = require("../../utils/AppError");
 const env = require("../../config/env");
 
@@ -18,22 +17,24 @@ exports.register = async ({ name, email, password, role }) => {
     throw new AppError("Name, email and password are required", 400);
   }
 
-  const existingUser = users.find((u) => u.email === email);
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
   if (existingUser) {
     throw new AppError("User already exists", 400);
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const user = {
-    id: crypto.randomUUID(),
-    name,
-    email,
-    password: hashedPassword,
-    role: role || "ATTENDEE",
-  };
-
-  users.push(user);
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      role: role || "ATTENDEE",
+    },
+  });
 
   return {
     token: generateToken(user),
@@ -51,7 +52,10 @@ exports.login = async ({ email, password }) => {
     throw new AppError("Email and password are required", 400);
   }
 
-  const user = users.find((u) => u.email === email);
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
   if (!user) {
     throw new AppError("Invalid email or password", 401);
   }
